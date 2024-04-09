@@ -12,4 +12,4 @@
 ### Entitäten
 - Address(street: String, city: String, zip: Int)
 - Category(case BUSINESS, PRIVATE, FAMILY)
-- 
+- AddressBookEntry(lastName:String, firstName:String, phoneNumber:String, mail: String, category: Category, address:Address)
