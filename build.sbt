@@ -6,3 +6,6 @@ lazy val root = (project in file("."))
   .settings(
     name := "MiniProjekt"
   )
+
+libraryDependencies += "org.typelevel" %% "cats-core" % "2.10.0"
+libraryDependencies += "org.typelevel" %% "cats-effect" % "3.6-0142603"
