@@ -1,3 +1,5 @@
 package domain.person
 
-case class LastName(name:String);
+import domain.PrintTrait
+
+case class LastName(name:String) extends PrintTrait("Nachname: ", name)

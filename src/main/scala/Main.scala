@@ -1,15 +1,21 @@
+import repository.AddressBookEntryRepository
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
 import domain.AddressBookEntry
-import domain.person.{FirstName, LastName}
-import service.IOService
+import service.AddressBookEntryFactory
+
+var addressBookEntryStore: List[AddressBookEntry] = List.empty
+
+def addEntry(): Unit = {
+  addressBookEntryStore = AddressBookEntryRepository().saveNewEntry(addressBookEntryStore, AddressBookEntryFactory().getAddressBookDataFromUser.unsafeRunSync())
+  IO.println("Ihre Einträge:\n").unsafeRunSync()
+  addressBookEntryStore.foreach(entry => IO.println(s"Adresse ${addressBookEntryStore.indexOf(entry) + 1}: \n$entry" ).unsafeRunSync())
+}
 
 object Main {
-  val addressBookEntryStore: List[AddressBookEntry] = List.empty
-
   def main(args: Array[String]): Unit = {
-    getAddressBookDataFromUser()
+    while(true){
+      addEntry()
+    }
   }
-
-
 }
