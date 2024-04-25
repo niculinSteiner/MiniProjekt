@@ -1,11 +1,12 @@
 package service
 
+import service.IOService.*
 import cats.effect.IO
 import domain.address.{Address, City, Street}
 import domain.person.{Email, FirstName, LastName, PhoneNumber}
 import domain.{AddressBookEntry, Category}
 
-class AddressBookEntryFactory {
+object AddressBookEntryFactory {
 
   def getAddressBookDataFromUser: IO[AddressBookEntry] = {
     for {
@@ -31,17 +32,5 @@ class AddressBookEntryFactory {
       streetName <- askAndRead("Was ist Ihre Straße?")
       number <- askAndRead("Was ist Ihre Hausnummer?", _.toInt)
     } yield Street(number, streetName)
-  }
-
-  private def askAndRead[A](question: String, parser: String => A = identity): IO[A] = {
-    for {
-      _ <- IO.println(question)
-      input <- IO.readLine
-    } yield parser(input)
-  }
-
-  private def parseCategory(input: String): Category = {
-    val categoryIndex = input.toInt - 1
-    Category.fromOrdinal(categoryIndex)
   }
 }
