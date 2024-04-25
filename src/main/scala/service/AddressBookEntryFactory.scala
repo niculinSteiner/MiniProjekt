@@ -1,45 +1,47 @@
 package service
 
 import cats.effect.IO
-import cats.effect.unsafe.implicits.global
 import domain.address.{Address, City, Street}
 import domain.person.{Email, FirstName, LastName, PhoneNumber}
 import domain.{AddressBookEntry, Category}
 
-import scala.io.StdIn.readLine
-
 class AddressBookEntryFactory {
 
   def getAddressBookDataFromUser: IO[AddressBookEntry] = {
-    val lastName: IO[LastName] = askAndRead[String]("Was ist Ihr Nachname?").map(name => LastName(name))
-    val firstname: IO[FirstName] = askAndRead[String]("Was ist Ihr Vorname?").map(name => FirstName(name))
-    val mail: IO[Email] = askAndRead[String]("Was ist Ihre Email?").map(mail => Email(mail))
-    val phoneNumber: IO[PhoneNumber] = askAndRead[String]("Was ist Ihr tel. Nummer?").map(name => PhoneNumber(name))
-    val address: IO[Address] = askForAddress()
-    val category: IO[Category] = askAndRead[Int]("1(BUSINESS), 2(PRIVATE) oder 3(FAMILY)", _.toInt).map(category => Category.fromOrdinal(category - 1))
-    IO.delay(AddressBookEntry(get(lastName), get(firstname), get(mail), get(phoneNumber), get(address), get(category)))
+    for {
+      lastName <- askAndRead("Was ist Ihr Nachname?", input => LastName(input))
+      firstName <- askAndRead("Was ist Ihr Vorname?", input => FirstName(input))
+      email <- askAndRead("Was ist Ihre Email?", input => Email(input))
+      phoneNumber <- askAndRead("Was ist Ihre Telefonnummer?", input => PhoneNumber(input))
+      address <- askForAddress()
+      category <- askAndRead("1(BUSINESS), 2(PRIVATE) oder 3(FAMILY)", parseCategory)
+    } yield AddressBookEntry(lastName, firstName, email, phoneNumber, address, category)
   }
 
   private def askForAddress(): IO[Address] = {
-    val street: IO[Street] = askForStreet()
-    val city: IO[City] = askAndRead[String]("Wie heisst ihre Stadt/Dorf?").map(city => City(city))
-    val zip: IO[Int] = askAndRead[Int]("Was ist Ihre PLZ?", _.toInt).map(zip => zip)
-    IO.delay(Address(get(street), get(city), get(zip)))
+    for {
+      street <- askForStreet()
+      city <- askAndRead("Wie heißt ihre Stadt/Dorf?", input => City(input))
+      zip <- askAndRead("Was ist Ihre PLZ?", _.toInt)
+    } yield Address(street, city, zip)
   }
 
   private def askForStreet(): IO[Street] = {
-    val street: IO[String] = askAndRead[String]("Was ist Ihre Strasse?").map(street => street)
-    val number: IO[Int] = askAndRead[Int]("Was ist Ihre Hausnummer?", _.toInt).map(number => number)
-    IO.delay(Street(get(number), get(street)))
-  }
-
-  private def get[B](ioObject: IO[B]): B = {
-    ioObject.unsafeRunSync()
+    for {
+      streetName <- askAndRead("Was ist Ihre Straße?")
+      number <- askAndRead("Was ist Ihre Hausnummer?", _.toInt)
+    } yield Street(number, streetName)
   }
 
   private def askAndRead[A](question: String, parser: String => A = identity): IO[A] = {
-    IO.println(question).unsafeRunSync()
-    val input = readLine()
-    IO.delay(parser(input))
+    for {
+      _ <- IO.println(question)
+      input <- IO.readLine
+    } yield parser(input)
+  }
+
+  private def parseCategory(input: String): Category = {
+    val categoryIndex = input.toInt - 1
+    Category.fromOrdinal(categoryIndex)
   }
 }

@@ -1,7 +1,7 @@
-import repository.AddressBookEntryRepository
 import cats.effect.IO
 import cats.effect.unsafe.implicits.global
 import domain.AddressBookEntry
+import repository.AddressBookEntryRepository
 import service.AddressBookEntryFactory
 
 var addressBookEntryStore: List[AddressBookEntry] = List.empty
