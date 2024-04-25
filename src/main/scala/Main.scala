@@ -19,7 +19,7 @@ object Main {
         addEntry()
       } catch
         case e: IllegalArgumentException => IO.println("Eingabe war falsch!: " + e.getMessage).unsafeRunSync()
-
+        case unexpected: Exception => IO.println("Unerwarteter Fehler aufgetreten" + unexpected.getCause)
     }
   }
 }
