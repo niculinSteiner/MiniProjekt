@@ -1,18 +1,19 @@
 package service
 
-import service.IOService.*
 import cats.effect.IO
+import domain.AddressBookEntry
 import domain.address.{Address, City, Street}
 import domain.person.{Email, FirstName, LastName, PhoneNumber}
-import domain.{AddressBookEntry, Category}
+import repository.AppState
+import service.IOService.*
 
 object AddressBookEntryFactory {
 
-  def getAddressBookDataFromUser: IO[AddressBookEntry] = {
+  def getAddressBookDataFromUser(appState: AppState): IO[AddressBookEntry] = {
     for {
       lastName <- askAndRead("Was ist Ihr Nachname?", input => LastName(input))
       firstName <- askAndRead("Was ist Ihr Vorname?", input => FirstName(input))
-      email <- askAndRead("Was ist Ihre Email?", input => Email(input))
+      email <- askAndRead("Was ist Ihre Email?", input => parseEmail(appState, Email(input)))
       phoneNumber <- askAndRead("Was ist Ihre Telefonnummer?", input => PhoneNumber(input))
       address <- askForAddress()
       category <- askAndRead("1(BUSINESS), 2(PRIVATE) oder 3(FAMILY)", parseCategory)
@@ -32,5 +33,16 @@ object AddressBookEntryFactory {
       streetName <- askAndRead("Was ist Ihre Straße?")
       number <- askAndRead("Was ist Ihre Hausnummer?", _.toInt)
     } yield Street(number, streetName)
+  }
+
+  private def parseEmail(appState: AppState, email: Email): Email = {
+    if (emailAlreadyExists(appState, email)) {
+      throw new IllegalArgumentException("Entry with this email already exists! Email has to be unique!")
+    }
+    email
+  }
+
+  private def emailAlreadyExists(appState: AppState, email: Email) = {
+    appState.addressBookEntryStore.map(_.mail).contains(email)
   }
 }

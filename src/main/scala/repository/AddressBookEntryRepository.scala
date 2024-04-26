@@ -3,7 +3,7 @@ package repository
 import domain.AddressBookEntry
 
 object AddressBookEntryRepository {
-    def saveNewEntry(store: List[AddressBookEntry], entryToSave: AddressBookEntry): List[AddressBookEntry] =  {
-    entryToSave :: List.from[AddressBookEntry](store) 
+  def saveNewEntry(appState: AppState, entryToSave: AddressBookEntry): AppState = {
+    AppState(entryToSave :: appState.copy().addressBookEntryStore)
   }
 }
