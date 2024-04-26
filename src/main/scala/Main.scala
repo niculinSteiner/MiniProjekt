@@ -46,9 +46,7 @@ object Main {
     }
     applicationLoop(true, newAppState.asInstanceOf[AppState])
   }
-
-
-
+  
   private def addEntry(appState: AppState): AppState = {
     saveNewEntry(appState, getAddressBookDataFromUser(appState).unsafeRunSync())
   }

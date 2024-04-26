@@ -21,7 +21,11 @@ object IOService{
   }
 
   def parseCategory(input: String): Category = {
-    val categoryIndex = input.toInt - 1
+    val categoryIndex = parseUserInputToCategoryOrdinal(input)
     Category.fromOrdinal(categoryIndex)
+  }
+
+  private def parseUserInputToCategoryOrdinal(input: String) = {
+    input.toInt - 1
   }
 }
