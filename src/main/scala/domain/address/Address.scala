@@ -1,6 +1,6 @@
 package domain.address
 
 import domain.PrintTrait
-case class Address(street: Street, city: City, zip: Int){
+case class Address(street: Street, city: City, zip: Int) extends PrintTrait("Addresse: ", street, city, zip){
   require(zip.toString.length == 4, "Zip Code length must be 4!")
 }
