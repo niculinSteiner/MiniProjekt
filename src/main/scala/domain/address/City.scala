@@ -1,4 +1,4 @@
 package domain.address
 
-import domain.PrintTrait
-case class City(name:String) extends PrintTrait("Stadt: ", name){}
+import domain.{FilterTrait, PrintTrait}
+case class City(name:String)extends FilterTrait extends PrintTrait("Stadt: ", name){}

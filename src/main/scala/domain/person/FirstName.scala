@@ -1,5 +1,5 @@
 package domain.person
 
-import domain.PrintTrait
+import domain.{FilterTrait, PrintTrait}
 
-case class FirstName(firstName: String) extends PrintTrait("Vorname: ", firstName)
+case class FirstName(firstName: String)extends FilterTrait extends PrintTrait("Vorname: ", firstName)

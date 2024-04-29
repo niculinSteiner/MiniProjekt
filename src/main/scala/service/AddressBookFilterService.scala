@@ -1,6 +1,7 @@
 package service
 
-import domain.person.Email
+import domain.address.City
+import domain.person.{Email, FirstName, LastName, PhoneNumber}
 import domain.{AddressBookEntry, Category, FilterTrait}
 
 object AddressBookFilterService {
@@ -11,7 +12,7 @@ object AddressBookFilterService {
       case _ : FirstName => entries.filter(_.firstName == filterArgument)
       case _ : LastName => entries.filter(_.lastName == filterArgument)
       case _ : PhoneNumber => entries.filter(_.phoneNumber == filterArgument)
-      case _ : Address => entries.filter(_.address == filterArgument)
+      case _ : City => entries.filter(_.address == filterArgument)
       case _  => entries //if nothing found
     }
   }

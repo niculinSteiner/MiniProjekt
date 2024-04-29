@@ -1,5 +1,6 @@
 import cats.effect.unsafe.implicits.global
-import domain.person.Email
+import domain.address.City
+import domain.person.{Email, FirstName, LastName, PhoneNumber}
 import domain.{AddressBookEntry, Category}
 import repository.AddressBookEntryRepository.*
 import repository.{AddressBookEntryRepository, AppState}
@@ -60,19 +61,43 @@ object Main {
     val filteredEntries: AppState = askAndRead("Nach welchem Attribute soll gefilterd werden?\n" +
       "1. Kategorie\n" +
       "2. Email\n" +
-      "3. Zurück").unsafeRunSync()
+      "3. Vorname\n" +
+      "4. Nachname\n" +
+      "5. Telefonnummer\n" +
+      "6. Stadt\n" +
+      "7. Zurück").unsafeRunSync()
     match {
       case "1" =>
         val category = for {
-          input <- askAndRead("Wie heisst die Kategorie?")
+          input <- askAndRead("Wie lautet die Kategorie?")
         } yield Category.valueOf(input)
         AppState(filterBy(category.unsafeRunSync(), appState.addressBookEntryStore))
       case "2" =>
         val email = for {
-          input <- askAndRead("Wie heisst die Email?")
+          input <- askAndRead("Wie lautet die Email?")
         } yield Email(input)
         AppState(filterBy(email.unsafeRunSync(), appState.addressBookEntryStore))
-      case "3" => appState
+      case "3" =>
+        val firstName = for {
+          input <- askAndRead("Wie lautet der Vorname?")
+        } yield FirstName(input)
+        AppState(filterBy(firstName.unsafeRunSync(), appState.addressBookEntryStore))
+      case "4" =>
+        val lastName = for {
+          input <- askAndRead("Wie lautet der Nachname?")
+        } yield LastName(input)
+        AppState(filterBy(lastName.unsafeRunSync(), appState.addressBookEntryStore))
+      case "5" =>
+        val phoneNumber = for {
+          input <- askAndRead("Wie lautet die Telefonnummer?")
+        } yield PhoneNumber(input)
+        AppState(filterBy(phoneNumber.unsafeRunSync(), appState.addressBookEntryStore))
+      case "6" =>
+        val city = for {
+          input <- askAndRead("Wie lautet die Stadt?")
+        } yield City(input)
+        AppState(filterBy(city.unsafeRunSync(), appState.addressBookEntryStore))
+      case "7" => appState
       case _ => println("Ungültige Eingabe!"); showEntriesByFilter(appState)
     }
     filteredEntries
