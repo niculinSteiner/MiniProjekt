@@ -1,5 +1,5 @@
 import cats.effect.unsafe.implicits.global
-import domain.address.City
+import domain.address.{Address, City, Street}
 import domain.person.{Email, FirstName, LastName, PhoneNumber}
 import domain.{AddressBookEntry, Category}
 import repository.AddressBookEntryRepository.*
@@ -13,10 +13,10 @@ import scala.annotation.tailrec
 
 val actionFinishedPlaceHolder: String = "\nAction finished!" + "" +
   "\n----------------------------------------------------------\n\n"
-
+val demoData: List[AddressBookEntry] = List(AddressBookEntry(LastName("steiner"), FirstName("niculin"), Email("m@m.ch"), PhoneNumber("0777777777"), Address(Street(9, "halden"), City("benken"), 8778), Category.BUSINESS))
 object Main {
   def main(args: Array[String]): Unit = {
-    applicationLoop(false, AppState())
+    applicationLoop(false, AppState(demoData))
   }
 
   @tailrec
