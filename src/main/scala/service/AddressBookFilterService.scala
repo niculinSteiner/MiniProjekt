@@ -12,7 +12,7 @@ object AddressBookFilterService {
       case _ : FirstName => entries.filter(_.firstName == filterArgument)
       case _ : LastName => entries.filter(_.lastName == filterArgument)
       case _ : PhoneNumber => entries.filter(_.phoneNumber == filterArgument)
-      case _ : City => entries.filter(_.address == filterArgument)
+      case _ : City => entries.filter(_.address.city == filterArgument)
       case _  => entries //if nothing found
     }
   }

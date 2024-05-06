@@ -13,7 +13,10 @@ import scala.annotation.tailrec
 
 val actionFinishedPlaceHolder: String = "\nAction finished!" + "" +
   "\n----------------------------------------------------------\n\n"
-val demoData: List[AddressBookEntry] = List(AddressBookEntry(LastName("steiner"), FirstName("niculin"), Email("m@m.ch"), PhoneNumber("0777777777"), Address(Street(9, "halden"), City("benken"), 8778), Category.BUSINESS))
+val demoData: List[AddressBookEntry] = List(
+  AddressBookEntry(LastName("steiner"), FirstName("niculin"), Email("m@m.ch"), PhoneNumber("0777777777"), Address(Street(9, "halden"), City("benken"), 8778), Category.BUSINESS),
+  AddressBookEntry(LastName("a"), FirstName("b"), Email("m@m.ch"), PhoneNumber("0777777777"), Address(Street(9, "halden"), City("benken"), 8778), Category.BUSINESS))
+
 object Main {
   def main(args: Array[String]): Unit = {
     applicationLoop(false, AppState(demoData))
@@ -28,34 +31,59 @@ object Main {
       "1. Eintrag hinzufügen \n" +
       "2. Filtern\n" +
       "3. Alle Eintäge anzeigen\n" +
-      "4. Beenden").unsafeRunSync()
+      "4. Sortieren\n" +
+      "5. Beenden").unsafeRunSync()
     match {
       case "1" =>
         try {
           val newState = addEntry(appState)
-            printStore(newState.addressBookEntryStore)
-            newState
+          printStore(newState.addressBookEntryStore)
+          newState
         } catch
           case e: IllegalArgumentException => println("Eingabe war falsch!: " + e.getMessage); AppState(appState.addressBookEntryStore);
           case unexpected: Exception => println("Unerwarteter Fehler aufgetreten" + unexpected.getCause); AppState(appState.addressBookEntryStore);
       case "2" => printStore(showEntriesByFilter(appState).addressBookEntryStore); appState;
       case "3" => printStore(appState.addressBookEntryStore); appState;
-      case "4" =>
+      case "4" => printStore(sortEntries(appState).addressBookEntryStore); appState;
+      case "5" =>
         println("Auf Wiedersehen!")
         System.exit(0)
-      case _ => println("Ungültige Eingabe!");
+      case _ => println("Diese Aktion gibts nicht!"); appState;
     }
     applicationLoop(true, newAppState.asInstanceOf[AppState])
   }
-  
+
   private def addEntry(appState: AppState): AppState = {
     saveNewEntry(appState, getAddressBookDataFromUser(appState).unsafeRunSync())
+  }
+
+  private def sortEntries(appState: AppState): AppState = {
+    val sortedEntries: AppState = askAndRead("Nach welchem Attribute soll sortiert werden?\n" +
+      "1. Kategorie\n" +
+      "2. Email\n" +
+      "3. Vorname\n" +
+      "4. Nachname\n" +
+      "5. Telefonnummer\n" +
+      "6. Stadt\n" +
+      "7. Zurück").unsafeRunSync()
+    match {
+      case "1" => AppState(appState.addressBookEntryStore.sortBy(_.category.ordinal))
+      case "2" => AppState(appState.addressBookEntryStore.sortBy(_.mail.email.toLowerCase))
+      case "3" => AppState(appState.addressBookEntryStore.sortBy(_.firstName.firstName.toLowerCase))
+      case "4" => AppState(appState.addressBookEntryStore.sortBy(_.lastName.name.toLowerCase))
+      case "5" => AppState(appState.addressBookEntryStore.sortBy(_.phoneNumber.phoneNumber.toLowerCase))
+      case "6" => AppState(appState.addressBookEntryStore.sortBy(_.address.city.name.toLowerCase))
+      case "7" => appState
+      case _ => println("Ungültige Eingabe!"); showEntriesByFilter(appState)
+    }
+    sortedEntries
   }
 
   private def printStore(entries: List[AddressBookEntry]): Unit = {
     println("Ihre Einträge:\n")
     entries.foreach(entry => println(s"Adresse ${entries.indexOf(entry) + 1}: \n$entry"))
   }
+
 
   private def showEntriesByFilter(appState: AppState): AppState = {
     val filteredEntries: AppState = askAndRead("Nach welchem Attribute soll gefilterd werden?\n" +
