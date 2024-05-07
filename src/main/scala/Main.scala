@@ -42,9 +42,23 @@ object Main {
         } catch
           case e: IllegalArgumentException => println("Eingabe war falsch!: " + e.getMessage); AppState(appState.addressBookEntryStore);
           case unexpected: Exception => println("Unerwarteter Fehler aufgetreten" + unexpected.getCause); AppState(appState.addressBookEntryStore);
-      case "2" => printStore(showEntriesByFilter(appState).addressBookEntryStore); appState;
-      case "3" => printStore(appState.addressBookEntryStore); appState;
-      case "4" => printStore(sortEntries(appState).addressBookEntryStore); appState;
+      case "2" =>
+        try {
+          printStore(showEntriesByFilter(appState).addressBookEntryStore)
+          appState
+        } catch
+          case e: IllegalArgumentException => println("Eingabe war falsch!: " + e.getMessage); AppState(appState.addressBookEntryStore);
+          case unexpected: Exception => println("Unerwarteter Fehler aufgetreten" + unexpected.getCause); AppState(appState.addressBookEntryStore);
+      case "3" =>
+        printStore(appState.addressBookEntryStore)
+        appState;
+      case "4" =>
+        try {
+          printStore(sortEntries(appState).addressBookEntryStore)
+          appState
+        } catch
+          case e: IllegalArgumentException => println("Eingabe war falsch!: " + e.getMessage); AppState(appState.addressBookEntryStore);
+          case unexpected: Exception => println("Unerwarteter Fehler aufgetreten" + unexpected.getCause); AppState(appState.addressBookEntryStore);
       case "5" =>
         println("Auf Wiedersehen!")
         System.exit(0)
@@ -97,8 +111,8 @@ object Main {
     match {
       case "1" =>
         val category = for {
-          input <- askAndRead("Wie lautet die Kategorie?")
-        } yield Category.valueOf(input)
+          input <- askAndRead("Wie lautet die Kategorie? \n1. BUSINESS\n2. PRIVATE\n3. FAMILY", _.toInt)
+        } yield Category.fromOrdinal(input)
         AppState(filterBy(category.unsafeRunSync(), appState.addressBookEntryStore))
       case "2" =>
         val email = for {
