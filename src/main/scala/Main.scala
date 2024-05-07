@@ -80,8 +80,8 @@ object Main {
   }
 
   private def printStore(entries: List[AddressBookEntry]): Unit = {
-    println("Ihre Einträge:\n")
-    entries.foreach(entry => println(s"Adresse ${entries.indexOf(entry) + 1}: \n$entry"))
+    println("Ihre Einträge:")
+    entries.foreach(entry => println(s"\nAdresse ${entries.indexOf(entry) + 1}: \n$entry"))
   }
 
 
