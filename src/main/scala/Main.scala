@@ -111,8 +111,8 @@ object Main {
     match {
       case "1" =>
         val category = for {
-          input <- askAndRead("Wie lautet die Kategorie? \n1. BUSINESS\n2. PRIVATE\n3. FAMILY", _.toInt)
-        } yield Category.fromOrdinal(input)
+          input <- askAndRead("Wie lautet die Kategorie? \n1. BUSINESS\n2. PRIVATE\n3. FAMILY")
+        } yield Category.valueOf(input)
         AppState(filterBy(category.unsafeRunSync(), appState.addressBookEntryStore))
       case "2" =>
         val email = for {
